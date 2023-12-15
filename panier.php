@@ -84,15 +84,21 @@
                 echo '<p class="text-info">(encore ' . $resa . ' réservation(s) possible(s), ' . $enregistrement->count . ' emprunt(s) en cours)</p>';
                 foreach ($_SESSION["panier"] as $index => $livre) 
                 {
-                    echo $livre["auteur"] . ' - ' . $livre["titre"] . ' (' . $livre["anneeparution"] . ') ';
+                    $stmt = $connexion->prepare("SELECT auteur.nom, auteur.prenom FROM auteur INNER JOIN livre ON auteur.noauteur = livre.noauteur WHERE livre.nolivre =:nolivre");
+                    $stmt->bindParam(":nolivre", $livre["auteur"]);
+                    $stmt->execute();
+                    $enregistrement1 = $stmt->fetch(PDO::FETCH_OBJ);
+                    echo '<div class="d-flex justify-content-center align-items-center text-center">';
+                    echo $enregistrement1->prenom . ' ' . $enregistrement1->nom . ' - ' . $livre["titre"] . ' (' . $livre["anneeparution"] . ') ';
                     echo '<form method="post">';
                     echo '<input type="hidden" name="index" value="' . $index . '">';
-                    echo '<input type="submit" class="btn btn-outline-secondary" name="supprimer" value="Supprimer">';
+                    echo '<input type="submit" class="btn btn-outline-secondary mx-4" name="supprimer" value="Supprimer">';
                     echo '</form>';
+                    echo '</div>';
                 }
                 if (count($_SESSION["panier"]) > 0) 
                 {
-                    echo '<form method="post">';
+                    echo '<br><form method="post">';
                     echo '<input type="submit" class="btn btn-outline-secondary" name="valider" value="Valider le panier">';
                     echo '</form>';
                 }

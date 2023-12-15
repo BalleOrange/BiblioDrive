@@ -25,7 +25,7 @@
         if($enregistrement->dateretour <= $date)
         {
             $stmt = $connexion->prepare("DELETE FROM `emprunter` WHERE `emprunter`.`mel` =:mel AND `emprunter`.`nolivre` =:nolivre AND `emprunter`.`dateemprunt` =:dateempreunt");
-            $stmt->bindParam("mel", $enregistrement->mel);
+            $stmt->bindParam(":mel", $enregistrement->mel);
             $stmt->bindParam(":nolivre", $enregistrement->nolivre);
             $stmt->bindParam(":dateempreunt", $enregistrement->dateemprunt);
             $stmt->execute();
@@ -35,7 +35,13 @@
     $stmt->bindParam(':nolivre', $_GET["nolivre"]);
     $stmt->execute();
     $enregistrement1 = $stmt->fetch(PDO::FETCH_OBJ);
+    $stmt = $connexion->prepare("SELECT auteur.nom, auteur.prenom FROM auteur INNER JOIN livre ON auteur.noauteur = livre.noauteur WHERE livre.nolivre =:nolivre");
+    $stmt->bindParam(":nolivre", $enregistrement1->nolivre);
+    $stmt->execute();
+    $enregistrement2 = $stmt->fetch(PDO::FETCH_OBJ);
     echo '<div class="col-md-6">';
+    echo '<p>Auteur : ' . $enregistrement2->prenom . ' ' . $enregistrement2->nom . '</p>';
+    echo '<p>ISBN13 : ' . $enregistrement1->isbn13 . '</p>';
     echo '<p class="text-danger">Résumé du livre</p>';
     echo "<p>" . $enregistrement1->resume . "</p>";
     echo "<p>Date de paruption : " . $enregistrement1->anneeparution . "</p>";
@@ -50,10 +56,12 @@
       {
         if ($enregistrement === false || empty($enregistrement)) 
         {
+          echo '<div class="d-flex">';
           echo '<p class="text-success">Disponible</p>';
           echo '<form method="post" action="panier.php">';
-          echo '<a href="panier.php"><input type="submit" class="btn btn-outline-secondary" name="reserver" value="Réserver"></a>';
+          echo '<a class="mx-4" href="panier.php"><input type="submit" class="btn btn-outline-secondary" name="reserver" value="Emprunter (ajout au panier)"></a>';
           echo '</form>';
+          echo '</div>';
           $_SESSION["noEmprunter"] = $_GET["nolivre"];
         } 
         else 
@@ -64,13 +72,23 @@
     }
     else 
     {
-      echo '<p>Pour pouvoir réserver vous devez posséder un compte et vous identifier</p>';
+      if ($enregistrement === false || empty($enregistrement)) 
+      {
+        echo '<div class="d-flex">';
+        echo '<p class="text-success">Disponible</p>'; 
+        echo '<p class="text-danger mx-4">Pour pouvoir réserver vous devez posséder un compte et vous identifier</p>';
+        echo '</div>';
+      } 
+      else 
+      {
+        echo '<p class="text-danger">Indisponible</p>';
+      }
     }
     echo '</div>';
 
     echo '
         <div class="col-md-3">
-            <img src="' . $enregistrement1->image . '" alt="Pas d image disponible">
+            <img src="img/' . $enregistrement1->image . '" height="400" alt="Pas d image disponible">
         </div>';
 
     ?>

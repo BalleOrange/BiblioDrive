@@ -98,7 +98,7 @@
                             echo 'ISBN13 : <input type="text" class="form-control" name="isbn13"><br>';
                             echo 'Année de parution : <input type="text" class="form-control" name="anneeParution"><br>';
                             echo 'Résumé : <input type="text" class="form-control" name="resume"><br>';
-                            echo 'Image : <input type="text" class="form-control" name="image" value="img/"><br>';
+                            echo 'Image : <input type="text" class="form-control" name="image"><br>';
                             echo '<input type="submit" class="btn btn-outline-secondary" name="ajouter" value="Ajouter">';
                             echo '</form>';
                             echo '</div>';
