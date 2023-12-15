@@ -27,18 +27,18 @@
         <div class="carousel-inner">
         <?php
             require_once('bdd/biblio.php');
-            $stmt = $connexion->prepare("SELECT image FROM livre ORDER BY dateajout DESC LIMIT 2");
+            $stmt = $connexion->prepare("SELECT image, titre FROM livre ORDER BY dateajout DESC LIMIT 2");
             $stmt->execute();
-                $active = "active";
-                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) 
-                {
-                    ?>
-                    <div class="carousel-item <?php echo $active; ?>">
-                      <img src="img/<?php echo $row["image"]; ?>" alt="Image indisponible" class="img-fluid">
-                    </div>
-                    <?php
-                    $active = "";
-                }
+            $active = "active";
+            while ($enregistrement = $stmt->fetch(PDO::FETCH_ASSOC)) 
+            {
+                ?>
+                <div class="carousel-item <?php echo $active; ?>">
+                  <img src="img/<?php echo $enregistrement["image"]; ?>" alt="<?php echo $enregistrement["titre"]; ?>" class="img-fluid">
+                </div>
+                <?php
+                $active = "";
+            }
             ?>
         </div>
 
