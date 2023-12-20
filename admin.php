@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+<?php
+echo'<!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -10,8 +11,8 @@
     <title>Administrateur</title>
 </head>
 
-<body class="container-fluid">
-    <?php
+<body class="container-fluid">';
+    
     require_once('bdd/biblio.php');
     session_start();
 
@@ -38,15 +39,16 @@
             </div>';
 
             echo '<div class="row">
-                    <div class="col-md-9">';
+                    <div class="col-md-9 d-flex justify-content-center text-center align-items-center">';
             if (isset($_POST["creerMembre"])) 
             {
                 if (!isset($_POST["creer"])) 
                 {
+                    echo '<div class="col-md-5">';
                     echo '<h1>Créer un membre</h1>';
                     echo '<form method="post">';
                     echo 'Mel : <input type="text" class="form-control" name="mel"><br>';
-                    echo 'Mot de passe : <input type="text" class="form-control" name="mdp"><br>';
+                    echo 'Mot de passe : <input type="password" class="form-control" name="mdp"><br>';
                     echo 'Nom : <input type="text" class="form-control" name="nom"><br>';
                     echo 'Prénom : <input type="text" class="form-control" name="prenom"><br>';
                     echo 'Adresse : <input type="text" class="form-control" name="adresse"><br>';
@@ -54,13 +56,15 @@
                     echo 'Code Postal : <input type="text" class="form-control" name="codePostal"><br>';
                     echo '<input type="submit" class="btn btn-outline-secondary" name="creer" value="Créer un membre">';
                     echo '</form>';
+                    echo '</div>';
                 } 
             }
             elseif(isset($_POST["creer"]))  
             {
                 $stmt = $connexion->prepare("INSERT INTO utilisateur (mel, motdepasse, nom, prenom, adresse, ville, codepostal, profil) VALUES (:mel, :mdp, :nom, :prenom, :adresse, :ville, :codePostal, :membre)");
                 $stmt->bindParam(':mel', $_POST["mel"]);
-                $stmt->bindParam(':mdp', $_POST["mdp"]);
+                $mdp = password_hash($_POST["mdp"], PASSWORD_ARGON2I);
+                $stmt->bindParam(':mdp', $mdp);
                 $stmt->bindParam(':nom', $_POST["nom"]);
                 $stmt->bindParam(':prenom', $_POST["prenom"]);
                 $stmt->bindParam(':adresse', $_POST["adresse"]);
@@ -69,13 +73,36 @@
                 $membre = "Membre";
                 $stmt->bindParam(':membre', $membre);
                 $stmt->execute();
-        
-                $nb_lignes_inserees = $stmt->rowCount();
-                echo $nb_lignes_inserees . " ligne(s) insérée(s).<br>";
+
+                header("Location: admin.php");
+                exit();
             }
             else
             {
-                if (!empty($_POST["submit"])) {
+                if (!isset($_POST["submit"])) 
+                {
+                    $stmt = $connexion->prepare("SELECT noauteur, prenom FROM auteur");
+                    $stmt->execute();
+                    echo '<div class="col-md-5">';
+                    echo '<h1>Ajouter un livre</h1>';
+                    echo '<form method="post">';
+                    echo '<label for="auteur">Auteur :</label>';
+                    echo '<select class="form-select" name="auteur">';
+                    while ($enregistrement = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        echo '<option value="' . $enregistrement['noauteur'] . '">' . $enregistrement['prenom'] . '</option>';
+                    }
+                    echo '</select><br>';
+                    echo 'Titre : <input type="text" class="form-control" name="titre"><br>';
+                    echo 'ISBN13 : <input type="text" class="form-control" name="isbn13"><br>';
+                    echo 'Année de parution : <input type="text" class="form-control" name="anneeParution"><br>';
+                    echo 'Résumé : <textarea class="form-control" name="resume" rows="7"></textarea><br>';
+                    echo 'Image : <input type="text" class="form-control" name="image"><br>';
+                    echo '<input type="submit" class="btn btn-outline-secondary" name="submit" value="Ajouter">';
+                    echo '</form>';
+                    echo '</div>';
+                } 
+                else 
+                {
                     $noauteur = $_POST["auteur"];
                     $titre = $_POST["titre"];
                     $isbn13 = $_POST["isbn13"];
@@ -92,31 +119,10 @@
                     $stmt->bindParam(':resume', $resume);
                     $stmt->bindParam(':dateajout', $dateajout);
                     $stmt->bindParam(':image', $image);
-    
-                    if ($stmt->execute()) {
-                        echo "Livre ajouté avec succès.";
-                    } else {
-                        echo "Erreur lors de l'ajout du livre : " . $stmt->errorInfo()[2];
-                    }
-                } else {
-                    $stmt = $connexion->prepare("SELECT noauteur, prenom FROM auteur");
                     $stmt->execute();
-    
-                    echo '<h1>Ajouter un livre</h1>';
-                    echo '<form method="post">';
-                    echo '<label for="auteur">Auteur :</label>';
-                    echo '<select class="form-select" name="auteur">';
-                    while ($enregistrement = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                        echo '<option value="' . $enregistrement['noauteur'] . '">' . $enregistrement['prenom'] . '</option>';
-                    }
-                    echo '</select><br>';
-                    echo 'Titre : <input type="text" class="form-control" name="titre"><br>';
-                    echo 'ISBN13 : <input type="text" class="form-control" name="isbn13"><br>';
-                    echo 'Année de parution : <input type="text" class="form-control" name="anneeParution"><br>';
-                    echo 'Résumé : <input type="text" class="form-control" name="resume"><br>';
-                    echo 'Image : <input type="text" class="form-control" name="image"><br>';
-                    echo '<input type="submit" class="btn btn-outline-secondary" name="submit" value="Ajouter">';
-                    echo '</form>';
+
+                    header("Location: admin.php");
+                    exit();
                 }
             }
         }
@@ -133,8 +139,8 @@
     else 
     {
         echo '<p class="text-danger">Vous devez être administrateur !</p>';
-    }
-    ?>
-</body>
+    } 
+echo '</body>
 
-</html>
+</html>';
+?>

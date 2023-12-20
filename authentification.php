@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-
 <body>
-    <?php
+<?php
         if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) 
         {
             $profil = $_SESSION['profil'];
@@ -47,7 +45,8 @@
                 }
                 echo '</div>';
             }
-        } else 
+        } 
+        else 
         {
             if(!isset($_POST["connexion"]))
             {
@@ -70,19 +69,17 @@
             else
             {
                 require_once('bdd/biblio.php');
-                session_start();
                     
                 $mel = $_POST['identifiant'];
                 $mot_de_passe = $_POST['pswd'];
                     
-                $stmt = $connexion->prepare("SELECT * FROM utilisateur WHERE mel=:mel AND motdepasse=:motdepasse");
+                $stmt = $connexion->prepare("SELECT * FROM utilisateur WHERE mel=:mel");
                 $stmt->bindParam(':mel', $mel);
-                $stmt->bindParam(':motdepasse', $mot_de_passe);
                 $stmt->execute();
                     
                 $enregistrement = $stmt->fetch(PDO::FETCH_OBJ);
                     
-                if ($enregistrement) 
+                if (password_verify($mot_de_passe, $enregistrement->motdepasse)) 
                 {
                     $_SESSION['mel'] = $enregistrement->mel;
                     $_SESSION['nom'] = $enregistrement->nom;
@@ -92,21 +89,27 @@
                     $_SESSION['ville'] = $enregistrement->ville;
                     $_SESSION['profil'] = $enregistrement->profil;
                     $_SESSION['loggedin'] = true;
-                
-                    header("Location: accueil.php");
-                    exit();
+                    $profil = $_SESSION['profil'];
+                    if ($profil === 'Administrateur') 
+                    {
+                        header("Location: admin.php");
+                        exit();
+                    }
+                    else
+                    {
+                        header("Location: accueil.php");
+                        exit();
+                    }
                 }
                 else
                 {
                     $_SESSION['loggedin'] = false;
                     $_SESSION['erreur_connexion'] = "Identifiants incorrects. Veuillez réessayer.";
-                
                     header("Location: accueil.php");
                     exit();
                 }
             }
         }    
-    ?>
+?>
 </body>
-
 </html>

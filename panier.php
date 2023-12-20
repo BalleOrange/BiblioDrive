@@ -1,4 +1,21 @@
-<!DOCTYPE html>
+<?php
+session_start();
+require_once('bdd/biblio.php');
+
+//Fonction pour vérifier si le livre est déjà présent dans le panier
+function livreDejaDansPanier($nouveauLivre, $panier)
+{
+    foreach ($panier as $livre) 
+    {
+        if ($livre['titre'] === $nouveauLivre['titre'] && $livre['auteur'] === $nouveauLivre['auteur']) 
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+echo '<!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -8,27 +25,12 @@
     <title>Panier</title>
 </head>
 
-<body class="container-fluid">
+<body class="container-fluid">';
 
-    <?php
     include_once('entete.html');
-    ?>
-    <div class="row">
-        <div class="col-md-9 text-center">
-            <?php
-            session_start();
-            require_once('bdd/biblio.php');
-            function livreDejaDansPanier($nouveauLivre, $panier)
-            {
-                foreach ($panier as $livre) 
-                {
-                    if ($livre['titre'] === $nouveauLivre['titre'] && $livre['auteur'] === $nouveauLivre['auteur']) 
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
+    
+    echo '<div class="row">
+        <div class="col-md-9 text-center">';
             if (isset($_POST["reserver"])) 
             {
                 $stmt = $connexion->prepare("SELECT * FROM livre WHERE nolivre = :nolivre");
@@ -134,14 +136,12 @@
                 header("Location: panier.php");
                 exit();
             }
-            ?>
-        </div>
-        <div class="col-md-3">
-            <?php
-            include_once('authentification.php');
-            ?>
-        </div>
+        echo '</div>
+        <div class="col-md-3">';
+            include_once('authentification.php');  
+        echo'</div>
     </div>
 </body>
 
-</html>
+</html>';
+?>

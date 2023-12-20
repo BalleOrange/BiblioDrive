@@ -39,7 +39,7 @@
                 <?php
                 $active = "";
             }
-            ?>
+          ?>
         </div>
 
         <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
@@ -61,5 +61,33 @@
     </div>
   </div>
 </body>
+<script type="text/javascript" src="tarteaucitron/tarteaucitron.js"></script>
 
+<script>
+    tarteaucitron.init({
+        "hashtag": "#tarteaucitron",
+        "cookieName": "tarteaucitron",
+        "orientation": "middle",
+        "showAlertSmall": false,
+        "cookieslist": false,
+        "adblocker": false,
+        "AcceptAllCta": true,
+        "highPrivacy": true,
+        "handleBrowserDNTRequest": false,
+        "removeCredit": false,
+        "moreInfoLink": true,
+        "useExternalCss": false,
+
+        "cookies": [
+            {
+                "name": "youtube",
+                "label": "YouTube",
+                "description": "Contenus intégrés de YouTube.",
+                "src": "https://www.youtube.com/embed/PJCvmeRILLk", // Lien vers le contenu YouTube
+                "expire": 365,
+            }
+        ]
+    });
+    (tarteaucitron.job = tarteaucitron.job || []).push('youtube');
+</script>
 </html>
