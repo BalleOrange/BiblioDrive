@@ -11,13 +11,16 @@
 
 <body class="container-fluid">
 
+  <!--Inclusion de l'entete-->
   <?php
   include_once('entete.html');
   ?>
   <div class="row">
     <div class="col-md-9 text-center align-items-center">
       <div class=" justify-content-center align-items-center">
+      <!--Texte au dessus du carousel-->
       <h1 class="text-success">Dernières acquisitions</h1>
+      <!--Carousel dynamique-->
       <div id="demo" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-indicators">
           <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
@@ -25,16 +28,17 @@
         </div>
 
         <div class="carousel-inner">
+        <!--Requete pour afficher dynamiquement les images dans le carousel avec les 2 dernier livres ajoutés-->
         <?php
             require_once('bdd/biblio.php');
             $stmt = $connexion->prepare("SELECT image, titre FROM livre ORDER BY dateajout DESC LIMIT 2");
             $stmt->execute();
             $active = "active";
-            while ($enregistrement = $stmt->fetch(PDO::FETCH_ASSOC)) 
+            while ($enregistrement = $stmt->fetch(PDO::FETCH_OBJ)) 
             {
                 ?>
                 <div class="carousel-item <?php echo $active; ?>">
-                  <img src="img/<?php echo $enregistrement["image"]; ?>" alt="<?php echo $enregistrement["titre"]; ?>" class="img-fluid">
+                  <img src="img/<?php echo $enregistrement->image; ?>" alt="<?php echo $enregistrement->titre; ?>" class="img-fluid">
                 </div>
                 <?php
                 $active = "";
@@ -52,7 +56,7 @@
       </div>
 
     </div>
-
+    <!--Inclusion de la page de connexion-->
     <div class="col-md-3">
       <?php
       session_start();
@@ -61,6 +65,8 @@
     </div>
   </div>
 </body>
+
+<!--Inclusion des cookies avec tarteaucitron-->
 <script type="text/javascript" src="tarteaucitron/tarteaucitron.js"></script>
 
 <script>

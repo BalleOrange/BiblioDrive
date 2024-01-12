@@ -15,12 +15,15 @@ echo'<!DOCTYPE html>
     
     require_once('bdd/biblio.php');
     session_start();
-
+    //Verication de si une personne est connectée
     if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) 
     {
+        //récupération du profil
         $profil = $_SESSION['profil'];
+        //Affichage des formulaires pour ajouter un livre et créer un membre si la personne est administrateur
         if ($profil === 'Administrateur') 
         {
+            //Formulaires avec 2 boutons un pour ajouter un livre et l'autre pour créer un membre
             echo '<div class="row">
                 <div class="col-md-9">
                     <p>La Bibliothèque de Moulinsart est fermée au public jusqu’à nouvel ordre. Mais il vous est possible de réserver et retirer vos livres via notre service Biblio Drive !</p>
@@ -40,8 +43,10 @@ echo'<!DOCTYPE html>
 
             echo '<div class="row">
                     <div class="col-md-9 d-flex justify-content-center text-center align-items-center">';
-            if (isset($_POST["creerMembre"])) 
+            //Création d'un membre
+            if (isset($_POST["creerMembre"]) || isset($_POST["creer"])) 
             {
+                //Si le bouton pour créer un membre est pas appuyé on affiche le formulaire pour en créer un
                 if (!isset($_POST["creer"])) 
                 {
                     echo '<div class="col-md-5">';
@@ -58,28 +63,31 @@ echo'<!DOCTYPE html>
                     echo '</form>';
                     echo '</div>';
                 } 
+                //Si le bouton créer un membre est appuyé les données sont récupérés et envoyés dans la base de données
+                else  
+                {
+                    $stmt = $connexion->prepare("INSERT INTO utilisateur (mel, motdepasse, nom, prenom, adresse, ville, codepostal, profil) VALUES (:mel, :mdp, :nom, :prenom, :adresse, :ville, :codePostal, :membre)");
+                    $stmt->bindParam(':mel', $_POST["mel"]);
+                    $mdp = password_hash($_POST["mdp"], PASSWORD_ARGON2I);
+                    $stmt->bindParam(':mdp', $mdp);
+                    $stmt->bindParam(':nom', $_POST["nom"]);
+                    $stmt->bindParam(':prenom', $_POST["prenom"]);
+                    $stmt->bindParam(':adresse', $_POST["adresse"]);
+                    $stmt->bindParam(':ville', $_POST["ville"]);
+                    $stmt->bindParam(':codePostal', $_POST["codePostal"]);
+                    $membre = "Membre";
+                    $stmt->bindParam(':membre', $membre);
+                    $stmt->execute();
+    
+                    header("Location: admin.php");
+                    exit();
+                }
             }
-            elseif(isset($_POST["creer"]))  
+            //Ajout d'un livre
+            elseif (isset($_POST["ajouterLivre"]) || isset($_POST["ajouter"]))
             {
-                $stmt = $connexion->prepare("INSERT INTO utilisateur (mel, motdepasse, nom, prenom, adresse, ville, codepostal, profil) VALUES (:mel, :mdp, :nom, :prenom, :adresse, :ville, :codePostal, :membre)");
-                $stmt->bindParam(':mel', $_POST["mel"]);
-                $mdp = password_hash($_POST["mdp"], PASSWORD_ARGON2I);
-                $stmt->bindParam(':mdp', $mdp);
-                $stmt->bindParam(':nom', $_POST["nom"]);
-                $stmt->bindParam(':prenom', $_POST["prenom"]);
-                $stmt->bindParam(':adresse', $_POST["adresse"]);
-                $stmt->bindParam(':ville', $_POST["ville"]);
-                $stmt->bindParam(':codePostal', $_POST["codePostal"]);
-                $membre = "Membre";
-                $stmt->bindParam(':membre', $membre);
-                $stmt->execute();
-
-                header("Location: admin.php");
-                exit();
-            }
-            else
-            {
-                if (!isset($_POST["submit"])) 
+                //Si le bouton pour ajouter un livre est pas appuyé on affiche le formulaire pour en ajouter un
+                if (!isset($_POST["ajouter"])) 
                 {
                     $stmt = $connexion->prepare("SELECT noauteur, prenom FROM auteur");
                     $stmt->execute();
@@ -97,10 +105,11 @@ echo'<!DOCTYPE html>
                     echo 'Année de parution : <input type="text" class="form-control" name="anneeParution"><br>';
                     echo 'Résumé : <textarea class="form-control" name="resume" rows="7"></textarea><br>';
                     echo 'Image : <input type="text" class="form-control" name="image"><br>';
-                    echo '<input type="submit" class="btn btn-outline-secondary" name="submit" value="Ajouter">';
+                    echo '<input type="submit" class="btn btn-outline-secondary" name="ajouter" value="Ajouter">';
                     echo '</form>';
                     echo '</div>';
                 } 
+                //Si le bouton ajouter un livre est appuyé les données sont récupérés et envoyés dans la base de données
                 else 
                 {
                     $noauteur = $_POST["auteur"];
@@ -126,20 +135,24 @@ echo'<!DOCTYPE html>
                 }
             }
         }
-        echo '</div>
-                <div class="col-md-3">';
-        include_once("authentification.php");
-        echo '</div>
-                </div>';
+        //Si l'utilisateur est membre on lui refuse l'accès
+        elseif ($profil === 'Membre') 
+        {
+            echo '<p class="text-danger">Vous devez être administrateur !</p>';
+        } 
     } 
-    elseif ($profil === 'Membre') 
-    {
-        echo '<p class="text-danger">Vous devez être administrateur !</p>';
-    } 
+    //Si la personne n'est pas connectée on lui refuse l'accès
     else 
     {
         echo '<p class="text-danger">Vous devez être administrateur !</p>';
-    } 
+    }
+    //inclusion du formulaire de connexion
+    echo '</div>
+    <div class="col-md-3">';
+    include_once("authentification.php");
+    echo '</div>
+    </div>'; 
+
 echo '</body>
 
 </html>';

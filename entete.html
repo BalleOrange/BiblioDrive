@@ -5,20 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <title>Accueil</title>
 </head>
 <body class="container-fluid">
     <div class="row">
         <div class="col-md-9">
+            <!--Texte-->
             <p>La Bibliothèque de Moulinsart est fermée au public jusqu'à nouvel ordre. Mais il vous est possible de réserver et retirer vos livres via notre service Biblio Drive !</p>
             <div class="d-flex align-items-center mb-3">
+                <!--Formulaire pour chercher un livre-->
                 <form method="post" class="input-group" action="lister_livres.php">
                     <input type="text" class="form-control border-secondary border-2" placeholder="Rechercher dans le catalogue (saisie du nom de l'auteur)" name="searchbar">
                     <button class="btn btn-outline-secondary" type="submit" name="search"><i class="bi bi-search"></i></button>
                 </form>
+                <!--Bouton panier-->
                 <a href="panier.php"><button class="btn btn-outline-secondary ms-2">Pannier</button></a>
             </div>
         </div>
+        <!--Retour à l'accueil en cliquant sur l'image-->
         <div class="col-md-3">
             <a href="accueil.php"><img src="img/2.jpg" alt="" class="img-fluid"></a>
         </div>
