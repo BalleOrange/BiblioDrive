@@ -71,6 +71,7 @@
 
 <script>
     tarteaucitron.init({
+        "privacyUrl": "privacy.html",
         "hashtag": "#tarteaucitron",
         "cookieName": "tarteaucitron",
         "orientation": "middle",
