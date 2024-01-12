@@ -11,11 +11,13 @@
 <body class="container-fluid">
   <?php
   //Inclusion de l'entete
+  session_start();
   include('entete.html');
-  ?>
-  <div class="row">
-    <div class="col-md-9">
-      <?php
+
+  if (!isset($_SESSION['loggedin']) || $_SESSION['profil'] === "Membre") 
+  {
+  echo '<div class="row">';
+    echo '<div class="col-md-9">';
       require_once('bdd/biblio.php');
       $auteur = $_POST["searchbar"];
       //Requete pour prendre les livres d'un certain auteur
@@ -28,12 +30,16 @@
       {
         echo "<a href='http://localhost/bibliodrive/detail.php?nolivre=" . $enregistrement->nolivre . "'>" . $enregistrement->titre . " " . $enregistrement->anneeparution . "<br></a>";
       }
-      ?>
-    </div>
+    echo '</div>';
+  }
+  else
+  {
+    echo '<p>Vous devez être membre ou visiteur pour voir les livres</p>';
+  }
+    ?>
     <!--Inclusion de la page de connexion-->
     <div class="col-md-3">
       <?php
-      session_start();
       include_once('authentification.php');
       ?>
     </div>

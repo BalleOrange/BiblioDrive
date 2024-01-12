@@ -16,6 +16,8 @@
   ?>
   <div class="row">
     <?php
+    if (!isset($_SESSION['loggedin']) || $_SESSION['profil'] === "Membre") 
+    {
     require_once('bdd/biblio.php');
     //Récupération de tout ce qu'il y a dans la table emprunter
     $stmt = $connexion->prepare("SELECT * FROM emprunter");
@@ -106,7 +108,11 @@
         <div class="col-md-3">
             <img src="img/' . $detailLivre->image . '" height="400" alt="Pas d image disponible">
         </div>';
-
+  }
+  else
+  {
+    echo '<p>Vous devez être membre ou visiteur pour voir les détails</p>';
+  }
     ?>
     <!--Inclusion de la page de connexion-->
     <div class="col-md-3">

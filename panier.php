@@ -28,7 +28,8 @@ echo '<!DOCTYPE html>
 <body class="container-fluid">';
 
     include_once('entete.html');
-    
+    if (isset($_SESSION['loggedin']) && $_SESSION['profil'] === "Membre") 
+    {
     echo '<div class="row">
         <div class="col-md-9 text-center">';
             //Si le bouton réserver est appuyé
@@ -149,7 +150,12 @@ echo '<!DOCTYPE html>
                 header("Location: panier.php");
                 exit();
             }
-            //Inclusion du formulaire de connexion
+    } 
+    else
+    {
+        echo '<p>Vous devez être membre pour accéder au panier</p>';
+    }       
+        //Inclusion du formulaire de connexion
         echo '</div>
         <div class="col-md-3">';
         include_once('authentification.php');  
